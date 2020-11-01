@@ -12,7 +12,7 @@ abstract class MirkoScrapResult {
 
     abstract ImmutableList<MirkoPost> posts();
 
-    public static MirkoScrapResult create(LocalDate scrapDate, ImmutableList<MirkoPost> posts) {
+    static MirkoScrapResult create(LocalDate scrapDate, ImmutableList<MirkoPost> posts) {
         return new AutoValue_MirkoScrapResult(scrapDate, posts);
     }
 

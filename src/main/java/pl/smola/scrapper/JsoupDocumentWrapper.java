@@ -8,9 +8,10 @@ import java.time.LocalDate;
 @AutoValue
 abstract class JsoupDocumentWrapper {
     abstract LocalDate scrapDate();
+
     abstract Document jsoupDocument();
 
-    public static JsoupDocumentWrapper create(LocalDate scrapDate, Document jsoupDocument) {
+    static JsoupDocumentWrapper create(LocalDate scrapDate, Document jsoupDocument) {
         return new AutoValue_JsoupDocumentWrapper(scrapDate, jsoupDocument);
     }
 
