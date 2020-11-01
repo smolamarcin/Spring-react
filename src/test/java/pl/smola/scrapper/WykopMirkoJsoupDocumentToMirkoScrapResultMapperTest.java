@@ -1,6 +1,7 @@
 package pl.smola.scrapper;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
@@ -9,29 +10,26 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.Optional;
 
 import static com.google.common.truth.Truth.assertThat;
 
 class WykopMirkoJsoupDocumentToMirkoScrapResultMapperTest {
-    private static final MirkoPost FIRST_EXPECTED_POST = MirkoPost.builder()
-            .plusCount(43)
-            .author("Adams_GA")
-            .postContent("To było jak strzał do pustej bramki #f1")
-            .tags(ImmutableList.of("f1"))
-            .maybeImageUrl(Optional
-                    .of("https://www.wykop.pl/cdn/c3201142/comment_1604165933yMdoENzJCfrAHo1Fl1RzFa.jpg"))
+    private static final MirkoPost FIRST_EXPECTED_POST = MirkoPost.MirkoPostBuilder.aMirkoPost()
+            .setPlusCount(43)
+            .setAuthor("Adams_GA")
+            .setPostContent("To było jak strzał do pustej bramki #f1")
+            .setTags(ImmutableSet.of("f1"))
+            .setImageUrl("https://www.wykop.pl/cdn/c3201142/comment_1604165933yMdoENzJCfrAHo1Fl1RzFa.jpg")
             .build();
-    private static final MirkoPost SECOND_EXPECTED_POST = MirkoPost.builder()
-            .plusCount(27)
-            .author("zjadlbym_kebaba")
-            .postContent("Nowy przekaz partyjny? #neuropa #bekazpisu #protest")
-            .tags(ImmutableList.of("neuropa", "bekazpisu", "protest"))
-            .maybeImageUrl(Optional
-                    .of("https://www.wykop.pl/cdn/c3201142/comment_1604166389ohWlqNlCgjdQNO2AEtyaoM.jpg"))
+    private static final MirkoPost SECOND_EXPECTED_POST = MirkoPost.MirkoPostBuilder.aMirkoPost()
+            .setPlusCount(27)
+            .setAuthor("zjadlbym_kebaba")
+            .setPostContent("Nowy przekaz partyjny? #neuropa #bekazpisu #protest")
+            .setTags(ImmutableSet.of("neuropa", "bekazpisu", "protest"))
+            .setImageUrl("https://www.wykop.pl/cdn/c3201142/comment_1604166389ohWlqNlCgjdQNO2AEtyaoM.jpg")
             .build();
     private static final LocalDate DATE = LocalDate.of(2000, Month.NOVEMBER, 10);
-    private static final MirkoScrapResult DEFAULT_INSTANCE = MirkoScrapResult.create(DATE, ImmutableList.of());
+    private static final MirkoScrapResult DEFAULT_INSTANCE = new MirkoScrapResult(DATE, ImmutableList.of());
 
     private final Document testDocument = loadDocument("src/test/resources/mirko.html");
     private final Document brokenDocument = loadDocument("src/test/resources/broken_mirko.html");
@@ -39,26 +37,26 @@ class WykopMirkoJsoupDocumentToMirkoScrapResultMapperTest {
 
     @Test
     public void map_returnsNotNullObject() {
-        MirkoScrapResult mirkoScrapResult = WykopMirkoJsoupDocumentToSomePojoMapper
+        MirkoScrapResult mirkoScrapResult = JsoupDocumentToMirkoScrapResultMapper
                 .map(JsoupDocumentWrapper.create(DATE, testDocument));
 
         assertThat(mirkoScrapResult).isNotNull();
-        assertThat(mirkoScrapResult.scrapDate()).isEqualTo(DATE);
+        assertThat(mirkoScrapResult.getScrapDate()).isEqualTo(DATE);
     }
 
     @Test
     public void map_fetchesProperAttributes() {
-        MirkoScrapResult mirkoScrapResult = WykopMirkoJsoupDocumentToSomePojoMapper
+        MirkoScrapResult mirkoScrapResult = JsoupDocumentToMirkoScrapResultMapper
                 .map(JsoupDocumentWrapper.create(DATE, testDocument));
 
-        assertThat(mirkoScrapResult.posts())
+        assertThat(mirkoScrapResult.getPosts())
                 .containsAtLeast(FIRST_EXPECTED_POST, SECOND_EXPECTED_POST);
     }
 
     @Test
     public void map_emptyDocument_returnsDefaultInstance() {
 
-        MirkoScrapResult mirkoScrapResult = WykopMirkoJsoupDocumentToSomePojoMapper
+        MirkoScrapResult mirkoScrapResult = JsoupDocumentToMirkoScrapResultMapper
                 .map(JsoupDocumentWrapper.create(DATE, brokenDocument));
 
         assertThat(mirkoScrapResult).isEqualTo(DEFAULT_INSTANCE);

@@ -1,20 +1,65 @@
 package pl.smola.scrapper;
 
-import com.google.auto.value.AutoValue;
-import com.google.common.collect.ImmutableList;
-
+import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
 
 
-@AutoValue
-abstract class MirkoScrapResult {
-    abstract LocalDate scrapDate();
+@Entity
+final class MirkoScrapResult {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
-    abstract ImmutableList<MirkoPost> posts();
+    private LocalDate scrapDate;
 
-    static MirkoScrapResult create(LocalDate scrapDate, ImmutableList<MirkoPost> posts) {
-        return new AutoValue_MirkoScrapResult(scrapDate, posts);
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MirkoPost> posts;
+
+    MirkoScrapResult() {
     }
 
+    MirkoScrapResult(LocalDate scrapDate, List<MirkoPost> posts) {
+        this.scrapDate = scrapDate;
+        this.posts = posts;
+    }
 
+    Long getId() {
+        return id;
+    }
+
+    void setId(Long id) {
+        this.id = id;
+    }
+
+    LocalDate getScrapDate() {
+        return scrapDate;
+    }
+
+    void setScrapDate(LocalDate scrapDate) {
+        this.scrapDate = scrapDate;
+    }
+
+    List<MirkoPost> getPosts() {
+        return posts;
+    }
+
+    void setPosts(List<MirkoPost> posts) {
+        this.posts = posts;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MirkoScrapResult that = (MirkoScrapResult) o;
+        return Objects.equals(scrapDate, that.scrapDate) &&
+                Objects.equals(posts, that.posts);
+    }
+
+    @Override
+    public int hashCode() {
+        return 31;
+    }
 }

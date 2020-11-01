@@ -1,6 +1,7 @@
 package pl.smola.scrapper;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -8,7 +9,7 @@ import java.util.Optional;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
-final class WykopMirkoJsoupDocumentToSomePojoMapper {
+final class JsoupDocumentToMirkoScrapResultMapper {
     private static final String POST_ELEMENTS_CLASS = "entry iC ";
     private static final String TAG_SUMMARY_CLASS = "showTagSummary";
     private static final String PROFILE_SUMMARY_CLASS = "showProfileSummary";
@@ -18,35 +19,36 @@ final class WykopMirkoJsoupDocumentToSomePojoMapper {
     private static final String IMAGE_URL_CLASS = "media-content";
 
     static MirkoScrapResult map(JsoupDocumentWrapper jsoupDocumentWrapper) {
-        Elements postsElements = jsoupDocumentWrapper.jsoupDocument().getElementsByClass(POST_ELEMENTS_CLASS);
-        return MirkoScrapResult.create(jsoupDocumentWrapper.scrapDate(), postsElements
+        Elements postsElements = jsoupDocumentWrapper.getJsoupDocument().getElementsByClass(POST_ELEMENTS_CLASS);
+        ImmutableList<MirkoPost> collect = postsElements
                 .stream()
-                .map(WykopMirkoJsoupDocumentToSomePojoMapper::parse)
-                .collect(toImmutableList()));
+                .map(JsoupDocumentToMirkoScrapResultMapper::parse)
+                .collect(toImmutableList());
+        return new MirkoScrapResult(jsoupDocumentWrapper.getScrapDate(), collect);
     }
 
     private static MirkoPost parse(Element element) {
-        return MirkoPost.builder()
-                .plusCount(getPlusCount(element))
-                .postContent(getPostContent(element))
-                .tags(getTags(element))
-                .author(getAuthor(element))
-                .maybeImageUrl(getImageUrl(element))
+        return MirkoPost.MirkoPostBuilder.aMirkoPost()
+                .setPlusCount(getPlusCount(element))
+                .setPostContent(getPostContent(element))
+                .setTags(getTags(element))
+                .setAuthor(getAuthor(element))
+                .setImageUrl(getImageUrl(element))
                 .build();
     }
 
-    private static Optional<String> getImageUrl(Element element) {
+    private static String getImageUrl(Element element) {
         return Optional.ofNullable(element.getElementsByClass(IMAGE_URL_CLASS).first())
-                .map(e -> e.select("a")).map(e -> e.attr("href"));
+                .map(e -> e.select("a")).map(e -> e.attr("href")).orElse("");
     }
 
-    private static ImmutableList<String> getTags(Element element) {
+    private static ImmutableSet<String> getTags(Element element) {
         return Optional.ofNullable(element.getElementsByClass(TAG_SUMMARY_CLASS))
                 .map(Elements::text)
                 .filter(tags -> !tags.isEmpty())
                 .map(asString -> asString.split(" "))
-                .map(ImmutableList::copyOf)
-                .orElseGet(ImmutableList::of);
+                .map(ImmutableSet::copyOf)
+                .orElseGet(ImmutableSet::of);
 
     }
 

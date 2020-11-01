@@ -1,40 +1,146 @@
 package pl.smola.scrapper;
 
-import com.google.auto.value.AutoValue;
-import com.google.common.collect.ImmutableList;
+import javax.persistence.*;
+import java.util.Objects;
+import java.util.Set;
 
-import java.util.Optional;
+@Entity
+final class MirkoPost {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
-@AutoValue
-abstract class MirkoPost {
-    abstract int plusCount();
+    private int plusCount;
 
-    abstract String author();
+    private String author;
 
-    abstract String postContent();
+    @Column(columnDefinition = "LONGTEXT")
+    private String postContent;
 
-    abstract ImmutableList<String> tags();
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<String> tags;
 
-    abstract Optional<String> maybeImageUrl();
+    private String imageUrl;
 
-    static Builder builder() {
-        return new AutoValue_MirkoPost.Builder();
+
+    MirkoPost() {
     }
 
-    @AutoValue.Builder
-    abstract static class Builder {
-        public abstract Builder plusCount(int plusCount);
+    public static final class MirkoPostBuilder {
+        private int plusCount;
+        private String author;
+        private String postContent;
+        private Set<String> tags;
+        private String imageUrl;
 
-        public abstract Builder author(String author);
+        private MirkoPostBuilder() {
+        }
 
-        public abstract Builder postContent(String postContent);
+        public static MirkoPostBuilder aMirkoPost() {
+            return new MirkoPostBuilder();
+        }
 
-        public abstract Builder tags(ImmutableList<String> tags);
+        public MirkoPostBuilder setPlusCount(int plusCount) {
+            this.plusCount = plusCount;
+            return this;
+        }
 
-        public abstract Builder maybeImageUrl(Optional<String> maybeImageUrl);
+        public MirkoPostBuilder setAuthor(String author) {
+            this.author = author;
+            return this;
+        }
 
-        public abstract MirkoPost build();
+        public MirkoPostBuilder setPostContent(String postContent) {
+            this.postContent = postContent;
+            return this;
+        }
+
+        public MirkoPostBuilder setTags(Set<String> tags) {
+            this.tags = tags;
+            return this;
+        }
+
+        public MirkoPostBuilder setImageUrl(String imageUrl) {
+            this.imageUrl = imageUrl;
+            return this;
+        }
+
+        public MirkoPost build() {
+            MirkoPost mirkoPost = new MirkoPost();
+            mirkoPost.setPlusCount(plusCount);
+            mirkoPost.setAuthor(author);
+            mirkoPost.setPostContent(postContent);
+            mirkoPost.setTags(tags);
+            mirkoPost.imageUrl = this.imageUrl;
+            return mirkoPost;
+        }
     }
 
 
+
+
+    int getPlusCount() {
+        return plusCount;
+    }
+
+    void setPlusCount(int plusCount) {
+        this.plusCount = plusCount;
+    }
+
+    String getAuthor() {
+        return author;
+    }
+
+    void setAuthor(String author) {
+        this.author = author;
+    }
+
+    String getPostContent() {
+        return postContent;
+    }
+
+    void setPostContent(String postContent) {
+        this.postContent = postContent;
+    }
+
+    Set<String> getTags() {
+        return tags;
+    }
+
+    void setTags(Set<String> tags) {
+        this.tags = tags;
+    }
+
+    String getMaybeImageUrl() {
+        return imageUrl;
+    }
+
+    void setMaybeImageUrl(String maybeImageUrl) {
+        this.imageUrl = maybeImageUrl;
+    }
+
+    Long getId() {
+        return id;
+    }
+
+    void setId(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MirkoPost mirkoPost = (MirkoPost) o;
+        return plusCount == mirkoPost.plusCount &&
+                Objects.equals(author, mirkoPost.author) &&
+                Objects.equals(postContent, mirkoPost.postContent) &&
+                Objects.equals(tags, mirkoPost.tags) &&
+                Objects.equals(imageUrl, mirkoPost.imageUrl);
+    }
+
+    @Override
+    public int hashCode() {
+        return 31;
+    }
 }

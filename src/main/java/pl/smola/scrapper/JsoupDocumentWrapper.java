@@ -1,19 +1,15 @@
 package pl.smola.scrapper;
 
-import com.google.auto.value.AutoValue;
+import lombok.Value;
 import org.jsoup.nodes.Document;
 
 import java.time.LocalDate;
 
-@AutoValue
-abstract class JsoupDocumentWrapper {
-    abstract LocalDate scrapDate();
+@Value(staticConstructor = "create")
+final class JsoupDocumentWrapper {
+    private final LocalDate scrapDate;
 
-    abstract Document jsoupDocument();
-
-    static JsoupDocumentWrapper create(LocalDate scrapDate, Document jsoupDocument) {
-        return new AutoValue_JsoupDocumentWrapper(scrapDate, jsoupDocument);
-    }
+    private final Document jsoupDocument;
 
 
 }
