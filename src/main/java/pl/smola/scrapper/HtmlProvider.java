@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -19,7 +19,7 @@ final class HtmlProvider implements Function<String, Optional<JsoupDocumentWrapp
     @Override
     public Optional<JsoupDocumentWrapper> apply(String url) {
         try {
-            return Optional.of(JsoupDocumentWrapper.create(LocalDate.now(), getDocument(url)));
+            return Optional.of(JsoupDocumentWrapper.create(LocalDateTime.now(), getDocument(url)));
         } catch (IOException e) {
             LOGGER.error(String.format("Unable to fetch %s.", url), e);
             return Optional.empty();

@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Month;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -28,8 +30,9 @@ class WykopMirkoJsoupDocumentToMirkoScrapResultMapperTest {
             .setTags(ImmutableSet.of("neuropa", "bekazpisu", "protest"))
             .setImageUrl("https://www.wykop.pl/cdn/c3201142/comment_1604166389ohWlqNlCgjdQNO2AEtyaoM.jpg")
             .build();
-    private static final LocalDate DATE = LocalDate.of(2000, Month.NOVEMBER, 10);
-    private static final MirkoScrapResult DEFAULT_INSTANCE = new MirkoScrapResult(DATE, ImmutableList.of());
+    private static final LocalDateTime DATE_TIME = LocalDateTime
+            .of(LocalDate.of(2000, Month.NOVEMBER, 10), LocalTime.MIDNIGHT);
+    private static final MirkoScrapResult DEFAULT_INSTANCE = new MirkoScrapResult(DATE_TIME, ImmutableList.of());
 
     private final Document testDocument = loadDocument("src/test/resources/mirko.html");
     private final Document brokenDocument = loadDocument("src/test/resources/broken_mirko.html");
@@ -38,16 +41,16 @@ class WykopMirkoJsoupDocumentToMirkoScrapResultMapperTest {
     @Test
     public void map_returnsNotNullObject() {
         MirkoScrapResult mirkoScrapResult = JsoupDocumentToMirkoScrapResultMapper
-                .map(JsoupDocumentWrapper.create(DATE, testDocument));
+                .map(JsoupDocumentWrapper.create(DATE_TIME, testDocument));
 
         assertThat(mirkoScrapResult).isNotNull();
-        assertThat(mirkoScrapResult.getScrapDate()).isEqualTo(DATE);
+        assertThat(mirkoScrapResult.getScrapDateTime()).isEqualTo(DATE_TIME);
     }
 
     @Test
     public void map_fetchesProperAttributes() {
         MirkoScrapResult mirkoScrapResult = JsoupDocumentToMirkoScrapResultMapper
-                .map(JsoupDocumentWrapper.create(DATE, testDocument));
+                .map(JsoupDocumentWrapper.create(DATE_TIME, testDocument));
 
         assertThat(mirkoScrapResult.getPosts())
                 .containsAtLeast(FIRST_EXPECTED_POST, SECOND_EXPECTED_POST);
@@ -57,7 +60,7 @@ class WykopMirkoJsoupDocumentToMirkoScrapResultMapperTest {
     public void map_emptyDocument_returnsDefaultInstance() {
 
         MirkoScrapResult mirkoScrapResult = JsoupDocumentToMirkoScrapResultMapper
-                .map(JsoupDocumentWrapper.create(DATE, brokenDocument));
+                .map(JsoupDocumentWrapper.create(DATE_TIME, brokenDocument));
 
         assertThat(mirkoScrapResult).isEqualTo(DEFAULT_INSTANCE);
     }

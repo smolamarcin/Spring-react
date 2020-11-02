@@ -24,7 +24,7 @@ final class JsoupDocumentToMirkoScrapResultMapper {
                 .stream()
                 .map(JsoupDocumentToMirkoScrapResultMapper::parse)
                 .collect(toImmutableList());
-        return new MirkoScrapResult(jsoupDocumentWrapper.getScrapDate(), collect);
+        return new MirkoScrapResult(jsoupDocumentWrapper.getScrapDateTime(), collect);
     }
 
     private static MirkoPost parse(Element element) {

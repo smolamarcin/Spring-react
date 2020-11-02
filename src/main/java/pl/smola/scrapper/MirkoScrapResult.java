@@ -1,7 +1,7 @@
 package pl.smola.scrapper;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -12,7 +12,7 @@ final class MirkoScrapResult {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private LocalDate scrapDate;
+    private LocalDateTime scrapDateTime;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MirkoPost> posts;
@@ -20,8 +20,8 @@ final class MirkoScrapResult {
     MirkoScrapResult() {
     }
 
-    MirkoScrapResult(LocalDate scrapDate, List<MirkoPost> posts) {
-        this.scrapDate = scrapDate;
+    MirkoScrapResult(LocalDateTime scrapDateTime, List<MirkoPost> posts) {
+        this.scrapDateTime = scrapDateTime;
         this.posts = posts;
     }
 
@@ -33,12 +33,12 @@ final class MirkoScrapResult {
         this.id = id;
     }
 
-    LocalDate getScrapDate() {
-        return scrapDate;
+    LocalDateTime getScrapDateTime() {
+        return scrapDateTime;
     }
 
-    void setScrapDate(LocalDate scrapDate) {
-        this.scrapDate = scrapDate;
+    void setScrapDateTime(LocalDateTime scrapDateTime) {
+        this.scrapDateTime = scrapDateTime;
     }
 
     List<MirkoPost> getPosts() {
@@ -54,7 +54,7 @@ final class MirkoScrapResult {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MirkoScrapResult that = (MirkoScrapResult) o;
-        return Objects.equals(scrapDate, that.scrapDate) &&
+        return Objects.equals(scrapDateTime, that.scrapDateTime) &&
                 Objects.equals(posts, that.posts);
     }
 
